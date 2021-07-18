@@ -595,6 +595,12 @@ DataBase
 
    ` mysqldump -u用户名 -p密码 数据库名称 >保存的路径`
 
+   `mysqldump -uroot -p databases > path`
+
+   this method suggests save the file in another route path exclude the c ,because this route need authority
+
+   
+
    * 还原
      * 登录数据库
      * 创建数据库

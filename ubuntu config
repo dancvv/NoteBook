@@ -1,0 +1,33 @@
+# install idea jdk 
+sudo apt update
+sudo apt install openjdk-8-jdk
+java -version
+
+# install google chrome
+download the exeutable file from the official web
+
+## install git
+sudo apt-get install git
+sudo apt-get update
+
+### config user and generate rsa key
+git config --global user.name  “aaa”
+git config --global user.email "aa@qq.com"
+ssh-keygen -t rsa -C "aa@qq.com"
+
+the key locate in the ~./ssh
+
+# install px4 and gazebo
+https://docs.px4.io/master/en/dev_setup/dev_env_linux_ubuntu.html#gazebo-jmavsim-and-nuttx-pixhawk-targets
+
+- Download the source code and run the ubuntu.sh
+git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+bash ./PX4-Autopilot/Tools/setup/ubuntu.sh
+- 
+wget https://raw.githubusercontent.com/PX4/PX4-Autopilot/master/Tools/setup/ubuntu.sh
+wget https://raw.githubusercontent.com/PX4/PX4-Autopilot/master/Tools/setup/requirements.txt
+bash ubuntu.sh
+
+# install ros it needs the ubuntu 18
+wget https://raw.githubusercontent.com/PX4/Devguide/master/build_scripts/ubuntu_sim_ros_melodic.sh
+bash ubuntu_sim_ros_melodic.sh

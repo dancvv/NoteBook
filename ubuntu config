@@ -47,3 +47,8 @@ nodejs 软件包同时包含node和npm二进制包。
 3）验证 Node.js 和 npm 是否正确安装。打印它们的版本号：
 
 node --version
+
+## use npm to install npm
+npm install -g @vue/cli
+# OR
+yarn global add @vue/cli

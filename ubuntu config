@@ -11,9 +11,9 @@ sudo apt-get install git
 sudo apt-get update
 
 ### config user and generate rsa key
-git config --global user.name  “aaa”
-git config --global user.email "aa@qq.com"
-ssh-keygen -t rsa -C "aa@qq.com"
+git config --global user.name  “laptopCarbon”
+git config --global user.email "uquantum@hotmail.com"
+ssh-keygen -t rsa -C "uquantum@hotmail.com"
 
 the key locate in the ~./ssh
 

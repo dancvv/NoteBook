@@ -24,7 +24,7 @@ $相当于window.onload
 
 响应，服务器给客户端回传数据
 
-![image-20210711211308705](F:\WebProject\NoteBook\image-20210711211308705.png)
+![image-20210711211308705](JavaWeb.assets/image-20210711211308705.png)
 
 web资源分类，分为静态资源和动态资源
 
@@ -38,7 +38,7 @@ web资源分类，分为静态资源和动态资源
 
 目录介绍
 
-![image-20210711213147831](F:\WebProject\NoteBook\image-20210711213147831.png)
+![image-20210711213147831](JavaWeb.assets/image-20210711213147831.png)
 
 ## Servlet
 
@@ -50,7 +50,7 @@ web资源分类，分为静态资源和动态资源
 
 servlet执行顺序
 
-![image-20210712105857723](F:\WebProject\NoteBook\image-20210712105857723.png)
+![image-20210712105857723](JavaWeb.assets/image-20210712105857723.png)
 
 ### servlet 生命周期
 
@@ -58,7 +58,7 @@ get请求与post请求工作不一样
 
 进行类型转换的时候需要进行类型转换。
 
-![image-20210712211624262](F:\WebProject\NoteBook\image-20210712211624262.png)
+![image-20210712211624262](JavaWeb.assets/image-20210712211624262.png)
 
 合并方法
 
@@ -70,7 +70,7 @@ doGet和doPost
 
 ## JAVA EE
 
-![image-20210713111817566](F:\WebProject\NoteBook\image-20210713111817566.png)
+![image-20210713111817566](JavaWeb.assets/image-20210713111817566.png)
 
 pojo实体类生成
 
@@ -78,5 +78,5 @@ pojo实体类生成
 
 session和cookie与浏览器之间的技术细节
 
-![image-20210714143856535](F:\WebProject\NoteBook\image-20210714143856535.png)
+![image-20210714143856535](JavaWeb.assets/image-20210714143856535.png)
 

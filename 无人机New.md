@@ -67,7 +67,7 @@ Phantom 4 Pro V2.0 ￥10000
 
 **其他系统页面**
 
-![img](https://img-blog.csdnimg.cn/20201211135014612.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2JhaWR1XzM2ODM2MDgw,size_16,color_FFFFFF,t_70)
+![img](无人机New.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2JhaWR1XzM2ODM2MDgw,size_16,color_FFFFFF,t_70.png)
 
 
 
@@ -85,7 +85,7 @@ Phantom 4 Pro V2.0 ￥10000
 
 这个团队保留了飞手的存在
 
-![image-20210716203728518](F:\WebProject\NoteBook\image-20210716203728518.png)
+![image-20210716203728518](无人机New.assets/image-20210716203728518.png)
 
 - 南京柠瑛智能
 

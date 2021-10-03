@@ -4,7 +4,7 @@
 
 两个编辑器的快捷键一样
 
-![image-20211002210317989](C:\Users\mountainINblack\AppData\Roaming\Typora\typora-user-images\image-20211002210317989.png)
+![image-20211002210317989](Linux.assets/image-20211002210317989.png)
 
 三种操作模式
 
@@ -56,6 +56,8 @@ Check the health and logs of Clash with:
 $ systemctl status clash
 $ journalctl -xe
 ```
+
+#### 代理设置
 
 由于服务器没有图形化界面，所以采用命令行配置全局代理
 

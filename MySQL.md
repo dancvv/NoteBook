@@ -766,3 +766,31 @@ login(username password)
 * Spring框架对JDBC的简单封装
 
 > 调用JDBCtemplate的方法完成
+
+
+
+### MySQL在Unbuntu下的问题
+
+ubuntu下安装mysql会自动设置一个默认密码，首先查看默认密码，然后利用默认密码登录mysql，进入mysql后利用命令行修改
+
+查看密码
+
+```
+sudo vim /etc/msyql/debian.cnf
+```
+
+目前采用mysql5.8以上的版本，与5.7的版本更改方式并不一致
+
+```
+use mysql;
+-- 设置默认密码为空
+update user set authentication_string='' where user='root';
+-- 设置空密码为root
+alter user 'root'@'localhost' identified with mysql_native_password by 'root'
+```
+
+以上的设置可以更改默认密码
+
+更改完成后重启服务
+
+`service mysql restart`

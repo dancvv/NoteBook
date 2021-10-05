@@ -70,4 +70,3 @@ vhost __defaultVhost__ {
     }
 }
 ```
-

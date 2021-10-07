@@ -11,3 +11,7 @@ sudo apt-get update
 sudo apt-get install jenkins
 ```
 
+# Jenkins+SVN
+
+需要三台机器
+

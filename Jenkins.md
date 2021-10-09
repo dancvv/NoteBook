@@ -15,3 +15,29 @@ sudo apt-get install jenkins
 
 需要三台机器
 
+`rpm -ql jenkins`
+
+启动Jenkins
+
+`systemctl start jenkins`
+
+查看进程
+
+`ps -ef|grep jenkins`
+
+查看端口
+
+`netstat -antp 8080`
+
+安装完成之后，打开8080端口网页，按照提示输入密码，密码存储在本地日志中
+
+进入之后开始默认安装插件
+
+```
+管理密码
+wangblack
+Mountain
+```
+
+MasterSlave
+

@@ -88,3 +88,7 @@ source files中传递所有文件写法 `target/**`
 **freestyle风格**的问题
 
 不便于维护，使用代码化的风格完成，采用pipeline模式，相对freestyle使用门槛高
+
+### pipline
+
+基于groovy的语法，建议使用生命式的语法Declarative Pipeline

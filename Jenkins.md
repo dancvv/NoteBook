@@ -39,5 +39,52 @@ wangblack
 Mountain
 ```
 
-MasterSlave
+### MasterSlave
 
+Jenkins独立一个机器，解决项目过多时，多个项目构建很花时间，采用分布式构建
+
+![image-20211010154714117](Jenkins.assets/image-20211010154714117.png)
+
+
+
+解决Jenkins单点项目不足
+
+新建节点，并发构建数，远程工作目录 /var/lib/jenkins
+
+### PipeLine
+
+创建流水线项目
+
+创建Jenkinsfile并提交至源码控制仓库提供了一系列的好处
+
+- 自动为所有分支和提交请求创建流水线构建过程
+- 流水线的代码审查/迭代
+- 审查流水线
+
+### 新建任务
+
+拉取代码，源码管理
+
+轮询，每隔一段时间自动构建
+
+### 构建后操作
+
+构建后，将代码放远程服务器上进行运行，要实现这个功能，需要第三方插件`send build artifacts over ssh`
+
+设置远程端口，将构建好的文件放置远程服务器
+
+需要全局设置中，找到Publish over SSH，然后点击add，将远程服务器中添加至其中
+
+![image-20211010210310093](Jenkins.assets/image-20211010210310093.png)
+
+SSH server配置
+
+![image-20211010210933800](Jenkins.assets/image-20211010210933800.png)
+
+![image-20211010212036003](Jenkins.assets/image-20211010212036003.png)
+
+source files中传递所有文件写法 `target/**`
+
+**freestyle风格**的问题
+
+不便于维护，使用代码化的风格完成，采用pipeline模式，相对freestyle使用门槛高

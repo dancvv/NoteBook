@@ -92,3 +92,18 @@ source files中传递所有文件写法 `target/**`
 ### pipline
 
 基于groovy的语法，建议使用生命式的语法Declarative Pipeline
+
+```
+stages{
+	stage(){
+		steps{
+			echo 'pull code'
+		}
+	}
+}
+```
+
+![image-20211011185203458](Jenkins.assets/image-20211011185203458.png)
+
+此处的流水线语法可以查看
+

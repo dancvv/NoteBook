@@ -111,3 +111,4 @@ stages{
 
 放入web端会导致版本管理不方便，一旦jenkins挂掉了，文件也会丢失掉
 
+在项目中写入一个jenkinsfile，在jenkins中选择从scm导入

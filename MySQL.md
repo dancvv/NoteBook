@@ -776,6 +776,10 @@ ubuntu下安装mysql会自动设置一个默认密码，首先查看默认密码
 
 查看密码
 
+ = localhost
+user     = debian-sys-maint
+password = rR8rIDoy5GO087Zt
+
 ```
 sudo vim /etc/msyql/debian.cnf
 ```

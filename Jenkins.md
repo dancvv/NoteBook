@@ -127,3 +127,79 @@ stages{
 
 #### 自动化部署
 
+当有git操作时，jenkins自动对项目进行构建
+
+**要实现自动构建操作，需要将项目部署到线上，或者采用内网穿透的方式**。否则，webhook无法将请求发送到jenkins中，导致jenkins无法根据push操作自动构建代码
+
+若要实现自动构建，Jenkins 需获得远程代码仓库 Github 的读取权
+
+##### 1. Github中获取访问token值,需要一个对项目有写权限的账户
+
+**GitHub->setting->Developer setting->Personal access tokens->点击Generate new token**
+ 内容填写如下：
+
+![img](https:////upload-images.jianshu.io/upload_images/9492512-30ccbf5a32c7294d.png?imageMogr2/auto-orient/strip|imageView2/2/w/823/format/webp)
+
+image.png
+
+
+ 创建成功后，token如下：
+
+![img](https:////upload-images.jianshu.io/upload_images/9492512-9a0325d24229af44.png?imageMogr2/auto-orient/strip|imageView2/2/w/788/format/webp)
+
+image.png
+
+
+
+##### 2. Jenkins中Github配置中添加token凭证
+
+**系统管理->添加Github server->添加Secret text凭证->连接测试
+ 同时，勾选为github指定另外一个hook url（配置Jenkins在Hook URL中监听Github的Post请求，然后进行自动构建）**
+
+![img](https:////upload-images.jianshu.io/upload_images/9492512-4c7181778941dbf9.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
+
+image.png
+
+
+
+Secret text凭证添加如下：
+ **类型需选择Secret text，Secret处输入Github中上面生成的token值**
+
+![img](https:////upload-images.jianshu.io/upload_images/9492512-328d5f845fe27c8e.png?imageMogr2/auto-orient/strip|imageView2/2/w/684/format/webp)
+
+image.png
+
+
+
+**注意：**在操作过程，点击连接测试，可能会提示：Failed to validate the account，首先请确保添加凭证的类型是Secret text，其次secret值填写的是步骤1中生成的token值
+
+##### 3. Github中项目配置webhook
+
+settings->webhooks->Add webhook
+
+
+
+![img](https:////upload-images.jianshu.io/upload_images/9492512-6ec347b8f56effc6.png?imageMogr2/auto-orient/strip|imageView2/2/w/681/format/webp)
+
+image.png
+
+![img](https:////upload-images.jianshu.io/upload_images/9492512-975c75541d0fbd16.png?imageMogr2/auto-orient/strip|imageView2/2/w/1054/format/webp)
+
+image.png
+
+**当结果如下：（前面所做的貌似都白做了？？）**
+
+![img](https:////upload-images.jianshu.io/upload_images/9492512-dde46c44018c67f1.png?imageMogr2/auto-orient/strip|imageView2/2/w/879/format/webp)
+
+webhook连接
+
+
+**因为填写的webhook是本地链接，Github无法成功访问所致，所以需要将本地发布到线上，或者通过ngrok实现内网穿透（ngrok服务器搭建）**
+ 后续再看吧，需要学习的东西还有很多啊
+
+
+
+作者：张小Di
+链接：https://www.jianshu.com/p/07b60b788088
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

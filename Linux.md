@@ -391,3 +391,81 @@ unzip FileName.zip    //解压 *.zip 文件
 ```
 unrar e Filename.rar　　//解压 *.rar 文件
 ```
+
+## Remote Coding
+
+### 查看GPU占用，每秒刷新 watch -n 1 nvidia-smi 
+
+以后台运行的方式运行python文件，并输出到nohup.out文件 
+
+`nohup python -u train_autodeeplab.py >> nohup.out 2>&1 & `
+
+apex文件夹安装为资源文件 
+
+```
+git clone https://github.com/NVIDIA/apex 
+cd apex python3 setup.py install
+```
+
+查看nohup.out文件 # 实时打印：`tail -f nohup.out `
+
+显示最后1000行：`tail -1000 nohup.out `
+
+### Linux nohup 命令
+
+#### 语法格式
+
+```
+ nohup Command [ Arg … ] [　& ]
+```
+
+#### 参数说明：
+
+**Command**：要执行的命令。
+
+**Arg**：一些参数，可以指定输出文件。
+
+**&**：让命令在后台执行，终端退出后命令仍旧执行。
+
+#### 实例
+
+以下命令在后台执行 root 目录下的 runoob.sh 脚本：
+
+```
+nohup /root/runoob.sh &
+```
+
+在终端如果看到以下输出说明运行成功：
+
+```
+appending output to nohup.out
+```
+
+这时我们打开 root 目录 可以看到生成了 nohup.out 文件。
+
+如果要停止运行，你需要使用以下命令查找到 nohup 运行脚本到 PID，然后使用 kill 命令来删除：
+
+```
+ps -aux | grep "runoob.sh" 
+```
+
+参数说明：
+
+- **a** : 显示所有程序
+- **u** : 以用户为主的格式来显示
+- **x** : 显示所有程序，不区分终端机
+
+以下命令在后台执行 root 目录下的 runoob.sh 脚本，并重定向输入到 runoob.log 文件：
+
+```
+nohup /root/runoob.sh > runoob.log 2>&1 &
+```
+
+**2>&1** 解释：
+
+将标准错误 2 重定向到标准输出 &1 ，标准输出 &1 再被重定向输入到 runoob.log 文件中。
+
+- 0 – stdin (standard input，标准输入)
+- 1 – stdout (standard output，标准输出)
+- 2 – stderr (standard error，标准错误输出)
+

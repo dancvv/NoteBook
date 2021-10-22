@@ -116,3 +116,39 @@ sudo chown -R mongodb:mongodb /var/lib/mongodb
 sudo chown -R mongodb:mongodb /var/log/mongodb
 ```
 
+### 使用
+
+```
+use 数据库名
+没有的话会自动创建
+
+展示当前数据库
+db
+
+展示数据库
+show dbs or database
+
+```
+
+admin：用户数据权限
+
+local：
+
+#### 删除
+
+删除数据库`db.dropDatabase`
+
+#### 集合
+
+显示创建
+
+```
+db.createColletion("my")
+```
+
+##### 集合删除
+
+````
+db.my.drop()
+````
+

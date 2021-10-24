@@ -122,7 +122,7 @@ sudo chown -R mongodb:mongodb /var/log/mongodb
 use 数据库名
 没有的话会自动创建
 
-展示当前数据库
+展示当前数据库,这个命令会展示当前运行的是哪个数据库
 db
 
 展示数据库
@@ -134,9 +134,14 @@ admin：用户数据权限
 
 local：
 
-#### 删除
+#### 删除数据库
 
-删除数据库`db.dropDatabase`
+进入数据库后，使用drop命令删除该数据库
+
+```
+use temp
+db.dropDatabase()
+```
 
 #### 集合
 
@@ -341,7 +346,13 @@ db.集合名.find($and:[{likenum:{$gte:NumberInt(700)}},{likenum:{$lt:NumberInt(
 
 ### 索引
 
+索引是为了减少查询的条数
+
 ![image-20211023205803111](mongoDB.assets/image-20211023205803111.png)
+
+**复合索引**
+
+多个字段的用户定义索引，列出的字段顺序具有重要意义 ，例如`{userid:1,score:-1}`组成，则索引首先按userid正序排序，然后按score倒序排序
 
 #### 索引的查看
 
@@ -383,4 +394,75 @@ db.comment.dropIndex({userid:1})
 删除所有索引
 db.comment.dropIndexes()
 ```
+
+#### 索引的使用
+
+**执行计划**
+
+分析查询性能，解释计划，查看查询的情况，如查询耗费时间，是否基于索引查询等
+
+```
+db.集合名.find(query，options).explain(options)
+```
+
+关键点看： "stage" : "COLLSCAN", 表示全集合扫描。
+
+**涵盖的查询**
+
+当查询条件和和查询的投影仅包含索引字段时，MongoDB直接从索引返回结果，就不会去扫描文档，使得查询速度非常快
+
+![image-20211024135056285](mongoDB.assets/image-20211024135056285.png)
+
+## 文章评论
+
+实现功能：
+
+- 基本增删改查API
+- 根据文章id查询评论
+- 评论点赞
+
+#### 表结构分析
+
+![image-20211024135414145](mongoDB.assets/image-20211024135414145.png)
+
+#### spring配置
+
+使用spring来搭建服务架构
+
+使用mongoDB框架来链接spring
+
+```java
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+```
+
+**yml配置**
+
+```java
+spring:
+  data:
+    mongodb:
+#      主机名
+      host: 127.0.0.1
+#      数据库
+      database: articledb
+#      默认端口
+      port: 27017
+```
+
+**启动类**
+
+使用springboot不需要添加启动类
+
+运行启动类，观察是否报错，是否出现一下语句
+
+```
+[           main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms'}
+```
+
+**实体类**
+
+可能出现一个collection对应多个实体类
 

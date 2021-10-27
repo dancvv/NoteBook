@@ -469,3 +469,17 @@ nohup /root/runoob.sh > runoob.log 2>&1 &
 - 1 – stdout (standard output，标准输出)
 - 2 – stderr (standard error，标准错误输出)
 
+### 切换用户
+
+第一次使用root用户时需要重新设置用户密码
+
+```
+sudo passwd root
+```
+
+按照提示更新密码后，才可以自有切换到root用户
+
+```
+su
+```
+

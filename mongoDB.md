@@ -466,3 +466,136 @@ spring:
 
 可能出现一个collection对应多个实体类
 
+```Java
+
+@Data
+// 可以省略，如果省略，则默认使用类名小写
+@Document(collection = "comment")
+// 复合索引,推荐使用命令行构建
+@CompoundIndex(def = "{'userid':1,'nickname':-1}")
+public class Comment {
+//    主键标识
+    @Id
+    private String id;
+//    该字段对应mongodb的字段的名字，如果一致，则无需该注解
+//    @Field("content")
+    private String content;
+    private Date publishtime;
+//    添加了一个单字段索引
+    @Indexed
+    private String userid;
+    private String nickname;
+    private LocalDateTime createdatetime;
+    private Integer likenum;
+    private Integer replynum;
+    private String state;
+    private String parentid;
+    private String articleid;
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", publishtime=" + publishtime +
+                ", userid='" + userid + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", createdatetime=" + createdatetime +
+                ", likenum=" + likenum +
+                ", replynum=" + replynum +
+                ", state='" + state + '\'' +
+                ", parentid='" + parentid + '\'' +
+                ", articleid='" + articleid + '\'' +
+                '}';
+    }
+}
+```
+
+
+
+**测试**
+
+如果不指定id，mongodb会自动生成一个ID，类似UUID的写法
+
+```java
+    /**
+     * 保存一个评论
+     */
+    @Test
+    public void testSaveComment(){
+        Comment comment=new Comment();
+        comment.setArticleid("100000");
+        comment.setContent("测试添加的数据");
+        comment.setCreatedatetime(LocalDateTime.now());
+        comment.setUserid("1003");
+        comment.setNickname("凯撒大帝");
+        comment.setState("1");
+        comment.setLikenum(0);
+        comment.setReplynum(0);
+        commentService.saveComment(comment);
+    }
+```
+
+#### 根据上机ID查询文章评论的分页列表
+
+commentrepository新增方法定义
+
+评论点赞
+
+根据id查询出用户当前点赞数，将当前点赞数+1，然后保存至数据库。
+
+简单易实现，但是IO过大
+
+```java
+/**
+* 点赞-效率低
+* @param id
+*/
+public void updateCommentThumbupToIncrementingOld(String id){
+Comment comment = CommentRepository.findById(id).get();
+comment.setLikenum(comment.getLikenum()+1);
+CommentRepository.save(comment);
+}
+```
+
+使用mongoTemplate来实现对某列的操作，变更service的写法
+
+```java
+	@Autowired
+    MongoTemplate mongo;    
+	/**
+     * 适应大规模动态更新点赞情况
+     */
+    public void updateCommentLikenum(String id){
+//        查询对象
+        Query query = Query.query(Criteria.where("_id").is(id));
+//        更新对象
+        Update update=new Update();
+        update.inc("likenum");
+//        参数1：查询对象
+//        参数2：更新对象
+//        参数3：集合的名字或实体类的类型comment.class
+        mongo.updateFirst(query,update,"comment");
+    }
+
+```
+
+测试更新的可用性
+
+```java
+@Test
+    public void testUpdateCommentLikenum(){
+        commentService.updateCommentLikenum("1");
+    }
+```
+
+## 集群和安全
+
+![image-20211027170803087](mongoDB.assets/image-20211027170803087.png)
+
+副本集架构目标
+
+一主一副本一仲裁，在同一台云服务器上为了区分彼此，采用不同的端口号构建相应的服务
+
+![image-20211027171422362](mongoDB.assets/image-20211027171422362.png)
+

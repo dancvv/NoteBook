@@ -384,3 +384,12 @@ db.comment.dropIndex({userid:1})
 db.comment.dropIndexes()
 ```
 
+#### 执行计划
+
+想知道查询结果是否有效
+
+```
+db.collection.find(query,options).explain(options)
+
+```
+

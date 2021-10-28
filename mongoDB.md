@@ -350,6 +350,8 @@ db.集合名.find($and:[{likenum:{$gte:NumberInt(700)}},{likenum:{$lt:NumberInt(
 
 ![image-20211023205803111](mongoDB.assets/image-20211023205803111.png)
 
+在某一个字段建立索引，使得该字段从大到小或者从小到大排列，后面的查询可以提高效率
+
 **复合索引**
 
 多个字段的用户定义索引，列出的字段顺序具有重要意义 ，例如`{userid:1,score:-1}`组成，则索引首先按userid正序排序，然后按score倒序排序

@@ -235,7 +235,10 @@ root用户可以创建多个用户
 
 ```
 useradd 用户名
+adduser 用户名
 ```
+
+推荐第二种，可以自动生成家目录
 
 默认该用户的默认目录为`/home/用户名`
 
@@ -244,7 +247,10 @@ useradd 用户名
 ```
 useradd -d /home/test kin
 kin所在的目录为test
+adduser 用户名
 ```
+
+
 
 **修改密码**
 
@@ -534,4 +540,32 @@ sudo passwd root
 ```
 su
 ```
+
+### 问题解决
+
+**mongo 不在 sudoers 文件中。此事将被报告**
+
+1. 首先切换到root权限的目录
+
+```
+su root
+```
+
+2. 修改`/etc/sudoers/`配置
+
+```
+vim /etc/sudoers
+```
+
+3. 添加账号
+
+将后面添加的用户名加入到下面
+
+```
+# User privilege specification
+root    ALL=(ALL:ALL) ALL
+mongo   ALL=(ALL:ALL) ALL
+```
+
+
 

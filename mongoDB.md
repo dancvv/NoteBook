@@ -122,7 +122,7 @@ sudo chown -R mongodb:mongodb /var/log/mongodb
 use 数据库名
 没有的话会自动创建
 
-展示当前数据库
+展示当前数据库,这个命令会展示当前运行的是哪个数据库
 db
 
 展示数据库
@@ -134,9 +134,14 @@ admin：用户数据权限
 
 local：
 
-#### 删除
+#### 删除数据库
 
-删除数据库`db.dropDatabase`
+进入数据库后，使用drop命令删除该数据库
+
+```
+use temp
+db.dropDatabase()
+```
 
 #### 集合
 
@@ -341,7 +346,15 @@ db.集合名.find($and:[{likenum:{$gte:NumberInt(700)}},{likenum:{$lt:NumberInt(
 
 ### 索引
 
+索引是为了减少查询的条数
+
 ![image-20211023205803111](mongoDB.assets/image-20211023205803111.png)
+
+在某一个字段建立索引，使得该字段从大到小或者从小到大排列，后面的查询可以提高效率
+
+**复合索引**
+
+多个字段的用户定义索引，列出的字段顺序具有重要意义 ，例如`{userid:1,score:-1}`组成，则索引首先按userid正序排序，然后按score倒序排序
 
 #### 索引的查看
 
@@ -384,6 +397,7 @@ db.comment.dropIndex({userid:1})
 db.comment.dropIndexes()
 ```
 
+<<<<<<< HEAD
 #### 执行计划
 
 想知道查询结果是否有效
@@ -393,3 +407,209 @@ db.collection.find(query,options).explain(options)
 
 ```
 
+=======
+#### 索引的使用
+
+**执行计划**
+
+分析查询性能，解释计划，查看查询的情况，如查询耗费时间，是否基于索引查询等
+
+```
+db.集合名.find(query，options).explain(options)
+```
+
+关键点看： "stage" : "COLLSCAN", 表示全集合扫描。
+
+**涵盖的查询**
+
+当查询条件和和查询的投影仅包含索引字段时，MongoDB直接从索引返回结果，就不会去扫描文档，使得查询速度非常快
+
+![image-20211024135056285](mongoDB.assets/image-20211024135056285.png)
+
+## 文章评论
+
+实现功能：
+
+- 基本增删改查API
+- 根据文章id查询评论
+- 评论点赞
+
+#### 表结构分析
+
+![image-20211024135414145](mongoDB.assets/image-20211024135414145.png)
+
+#### spring配置
+
+使用spring来搭建服务架构
+
+使用mongoDB框架来链接spring
+
+```java
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+```
+
+**yml配置**
+
+```java
+spring:
+  data:
+    mongodb:
+#      主机名
+      host: 127.0.0.1
+#      数据库
+      database: articledb
+#      默认端口
+      port: 27017
+```
+
+**启动类**
+
+使用springboot不需要添加启动类
+
+运行启动类，观察是否报错，是否出现一下语句
+
+```
+[           main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms'}
+```
+
+**实体类**
+
+可能出现一个collection对应多个实体类
+
+```Java
+
+@Data
+// 可以省略，如果省略，则默认使用类名小写
+@Document(collection = "comment")
+// 复合索引,推荐使用命令行构建
+@CompoundIndex(def = "{'userid':1,'nickname':-1}")
+public class Comment {
+//    主键标识
+    @Id
+    private String id;
+//    该字段对应mongodb的字段的名字，如果一致，则无需该注解
+//    @Field("content")
+    private String content;
+    private Date publishtime;
+//    添加了一个单字段索引
+    @Indexed
+    private String userid;
+    private String nickname;
+    private LocalDateTime createdatetime;
+    private Integer likenum;
+    private Integer replynum;
+    private String state;
+    private String parentid;
+    private String articleid;
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", publishtime=" + publishtime +
+                ", userid='" + userid + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", createdatetime=" + createdatetime +
+                ", likenum=" + likenum +
+                ", replynum=" + replynum +
+                ", state='" + state + '\'' +
+                ", parentid='" + parentid + '\'' +
+                ", articleid='" + articleid + '\'' +
+                '}';
+    }
+}
+```
+
+
+
+**测试**
+
+如果不指定id，mongodb会自动生成一个ID，类似UUID的写法
+
+```java
+    /**
+     * 保存一个评论
+     */
+    @Test
+    public void testSaveComment(){
+        Comment comment=new Comment();
+        comment.setArticleid("100000");
+        comment.setContent("测试添加的数据");
+        comment.setCreatedatetime(LocalDateTime.now());
+        comment.setUserid("1003");
+        comment.setNickname("凯撒大帝");
+        comment.setState("1");
+        comment.setLikenum(0);
+        comment.setReplynum(0);
+        commentService.saveComment(comment);
+    }
+```
+
+#### 根据上机ID查询文章评论的分页列表
+
+commentrepository新增方法定义
+
+评论点赞
+
+根据id查询出用户当前点赞数，将当前点赞数+1，然后保存至数据库。
+
+简单易实现，但是IO过大
+
+```java
+/**
+* 点赞-效率低
+* @param id
+*/
+public void updateCommentThumbupToIncrementingOld(String id){
+Comment comment = CommentRepository.findById(id).get();
+comment.setLikenum(comment.getLikenum()+1);
+CommentRepository.save(comment);
+}
+```
+
+使用mongoTemplate来实现对某列的操作，变更service的写法
+
+```java
+	@Autowired
+    MongoTemplate mongo;    
+	/**
+     * 适应大规模动态更新点赞情况
+     */
+    public void updateCommentLikenum(String id){
+//        查询对象
+        Query query = Query.query(Criteria.where("_id").is(id));
+//        更新对象
+        Update update=new Update();
+        update.inc("likenum");
+//        参数1：查询对象
+//        参数2：更新对象
+//        参数3：集合的名字或实体类的类型comment.class
+        mongo.updateFirst(query,update,"comment");
+    }
+
+```
+
+测试更新的可用性
+
+```java
+@Test
+    public void testUpdateCommentLikenum(){
+        commentService.updateCommentLikenum("1");
+    }
+```
+
+## 集群和安全
+
+![image-20211027170803087](mongoDB.assets/image-20211027170803087.png)
+
+副本集架构目标
+
+一主一副本一仲裁，在同一台云服务器上为了区分彼此，采用不同的端口号构建相应的服务
+
+![image-20211027171422362](mongoDB.assets/image-20211027171422362.png)
+
+>>>>>>> refs/remotes/origin/main

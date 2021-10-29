@@ -612,4 +612,12 @@ CommentRepository.save(comment);
 
 ![image-20211027171422362](mongoDB.assets/image-20211027171422362.png)
 
->>>>>>> refs/remotes/origin/main
+### MongoDB在SpringBoot中
+
+mongoTemplate
+
+https://docs.spring.io/spring-data/mongodb/docs/3.2.6/reference/html/#dependencies
+
+### Spring Data MongoDB
+
+CrudRepository接口提供复杂的CRUD功能

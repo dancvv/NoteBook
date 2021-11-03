@@ -1,4 +1,4 @@
-# mongoDB学习日记
+# mongoDB学习笔记
 
 mongod.conf文件
 
@@ -626,8 +626,103 @@ CrudRepository接口提供复杂的CRUD功能
 
 MongoDB通过命令`$near`,`$within`,`geoWithin`和`$nearSphere`提供地理空间查询。特定于地理空间查询的方法在`Criteria`类中可用。
 
+### $ match（汇总）
 
+筛选文档以仅将符合指定条件的文档传递到下一个管道阶段。用于aggreate中，使用表达式进行查询
+
+```
+{ $match: { <query> } }
+```
+
+$match获取指定查询条件的文档。查询语法与读取操作查询语法相同。即 $match不接受原始聚合表达式。而是使用$expr查询表达式在中包含聚合表达式$match。
+
+#### 限制
+
+- 该[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)查询语法等同于[读出操作查询](https://mongodb.net.cn/manual/tutorial/query-documents/#read-operations-query-argument)语法; 即 [`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)不接受[原始聚合表达式](https://mongodb.net.cn/manual/meta/aggregation-quick-reference/#aggregation-expressions)。要在中包含聚合表达式 [`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)，请使用[`$expr`](https://mongodb.net.cn/manual/reference/operator/query/expr/#op._S_expr)查询表达式：
+
+  ```
+  { $match: { $expr: { <aggregation expression> } } }
+  ```
+
+- 您不能[`$where`](https://mongodb.net.cn/manual/reference/operator/query/where/#op._S_where)在[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)查询中将其用作聚合管道的一部分。
+
+- 您不能在聚合管道中使用[`$near`](https://mongodb.net.cn/manual/reference/operator/query/near/#op._S_near)或[`$nearSphere`](https://mongodb.net.cn/manual/reference/operator/query/nearSphere/#op._S_nearSphere)在 [`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)查询中使用它。或者，您可以：
+
+  - 使用[`$geoNear`](https://mongodb.net.cn/manual/reference/operator/aggregation/geoNear/#pipe._S_geoNear)阶段而不是[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段。
+  - 在阶段或 中使用[`$geoWithin`](https://mongodb.net.cn/manual/reference/operator/query/geoWithin/#op._S_geoWithin)查询运算符。[`$center`](https://mongodb.net.cn/manual/reference/operator/query/center/#op._S_center)[`$centerSphere`](https://mongodb.net.cn/manual/reference/operator/query/centerSphere/#op._S_centerSphere)[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)
+
+- 要[`$text`](https://mongodb.net.cn/manual/reference/operator/query/text/#op._S_text)在[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段中使用， **[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段必须是管道的第一阶段**。
+
+## 例子
+
+这些示例使用以`articles`以下文档命名的集合：
+
+```
+{ "_id" : ObjectId("512bc95fe835e68f199c8686"), "author" : "dave", "score" : 80, "views" : 100 }
+{ "_id" : ObjectId("512bc962e835e68f199c8687"), "author" : "dave", "score" : 85, "views" : 521 }
+{ "_id" : ObjectId("55f5a192d4bede9ac365b257"), "author" : "ahn", "score" : 60, "views" : 1000 }
+{ "_id" : ObjectId("55f5a192d4bede9ac365b258"), "author" : "li", "score" : 55, "views" : 5000 }
+{ "_id" : ObjectId("55f5a1d3d4bede9ac365b259"), "author" : "annT", "score" : 60, "views" : 50 }
+{ "_id" : ObjectId("55f5a1d3d4bede9ac365b25a"), "author" : "li", "score" : 94, "views" : 999 }
+{ "_id" : ObjectId("55f5a1d3d4bede9ac365b25b"), "author" : "ty", "score" : 95, "views" : 1000 }
+```
+
+### 平等匹配
+
+以下操作用于[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)执行简单的相等匹配：
+
+```
+db.articles.aggregate(
+    [ { $match : { author : "dave" } } ]
+);
+```
+
+[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)选择将选择`author` 字段等于的文档`dave`，并且聚合返回以下内容：
+
+```
+{ "_id" : ObjectId("512bc95fe835e68f199c8686"), "author" : "dave", "score" : 80, "views" : 100 }
+{ "_id" : ObjectId("512bc962e835e68f199c8687"), "author" : "dave", "score" : 85, "views" : 521 }
+```
+
+### 执行计数
+
+以下示例选择要使用[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)管道运算符处理的文档 ，然后将结果通过[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)管道传输到管道运算符以计算文档计数：
+
+```
+db.articles.aggregate( [
+  { $match: { $or: [ { score: { $gt: 70, $lt: 90 } }, { views: { $gte: 1000 } } ] } },
+  { $group: { _id: null, count: { $sum: 1 } } }
+] );
+```
+
+在凝集管道，[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)选择的文件，其中任一`score`大于`70`和小于`90` 或`views`大于或等于`1000`。然后将这些文档通过管道传输[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)到进行计数。聚合返回以下内容：
+
+```
+{ "_id" : null, "count" : 5 }
+```
 
 ## 投影
 
-Spring Data查询方法通常返回由根存储库管理聚合的一个或者多个实例。然而，它可能
+Spring Data查询方法通常返回由根存储库管理聚合的一个或者多个实例。然而，它可能、
+
+### 聚合
+
+将多个文档的值组会在一起，并且可以对分组的数据执行各种操作以返回单个结果。MongoDB提供了三种执行聚合的方式：[聚合管道](https://mongodb.net.cn/manual/aggregation/#aggregation-framework)，[map-reduce函数](https://mongodb.net.cn/manual/aggregation/#aggregation-map-reduce)和[单一目的聚合方法](https://mongodb.net.cn/manual/aggregation/#single-purpose-agg-operations)。
+
+在这个例子中
+
+```
+db.orders.aggregate([
+   { $match: { status: "A" } },
+   { $group: { _id: "$cust_id", total: { $sum: "$amount" } } }
+])
+```
+
+**第一阶段**：[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段按`status`字段过滤文档，并将`status`等于的文档传递到下一阶段`"A"`。
+
+**第二阶段**：该[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)阶段按`cust_id`字段将文档分组，以计算每个唯一值的总和`cust_id`。
+
+最基本的管道阶段提供*过滤器*，其操作类似于查询和修改输出文档形式的*文档转换*。
+
+其他管道操作提供了用于按特定字段对文档进行分组和排序的工具，以及用于聚合包括文档数组在内的数组内容的工具。另外，管道阶段可以将[运算符](https://mongodb.net.cn/manual/reference/operator/aggregation/#aggregation-expression-operators)用于诸如计算平均值或连接字符串之类的任务。
+

@@ -621,3 +621,13 @@ https://docs.spring.io/spring-data/mongodb/docs/3.2.6/reference/html/#dependenci
 ### Spring Data MongoDB
 
 CrudRepository接口提供复杂的CRUD功能
+
+## GeoSpatial Queries
+
+MongoDB通过命令`$near`,`$within`,`geoWithin`和`$nearSphere`提供地理空间查询。特定于地理空间查询的方法在`Criteria`类中可用。
+
+
+
+## 投影
+
+Spring Data查询方法通常返回由根存储库管理聚合的一个或者多个实例。然而，它可能

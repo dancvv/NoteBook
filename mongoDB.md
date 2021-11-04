@@ -653,7 +653,7 @@ $match获取指定查询条件的文档。查询语法与读取操作查询语�
 
 - 要[`$text`](https://mongodb.net.cn/manual/reference/operator/query/text/#op._S_text)在[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段中使用， **[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段必须是管道的第一阶段**。
 
-## 例子
+#### 例子
 
 这些示例使用以`articles`以下文档命名的集合：
 
@@ -667,7 +667,7 @@ $match获取指定查询条件的文档。查询语法与读取操作查询语�
 { "_id" : ObjectId("55f5a1d3d4bede9ac365b25b"), "author" : "ty", "score" : 95, "views" : 1000 }
 ```
 
-### 平等匹配
+#### 平等匹配
 
 以下操作用于[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)执行简单的相等匹配：
 
@@ -684,7 +684,7 @@ db.articles.aggregate(
 { "_id" : ObjectId("512bc962e835e68f199c8687"), "author" : "dave", "score" : 85, "views" : 521 }
 ```
 
-### 执行计数
+#### 执行计数
 
 以下示例选择要使用[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)管道运算符处理的文档 ，然后将结果通过[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)管道传输到管道运算符以计算文档计数：
 
@@ -701,6 +701,67 @@ db.articles.aggregate( [
 { "_id" : null, "count" : 5 }
 ```
 
+### $ group（汇总）
+
+按指定的`_id`表达式对输入文档进行分组，并针对每个不同的分组输出文档。`_id`每个输出文档的字段都包含唯一的按值分组。输出文档还可以包含包含某些[累加器表达式](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#accumulators-group)值的计算字段。
+
+该[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)阶段具有以下原型形式：
+
+```
+{
+  $group:
+    {
+      _id: <expression>, // Group By Expression
+      <field1>: { <accumulator1> : <expression1> },
+      ...
+    }
+ }
+```
+
+以下聚合操作使用该[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)阶段来计算`sales`集合中文档的数量：
+
+```
+db.sales.aggregate( [
+  {
+    $group: {
+       _id: null,
+       count: { $sum: 1 }
+    }
+  }
+] )
+```
+
+该操作返回以下结果：
+
+```
+{ "_id" : null, "count" : 8 }
+```
+
+此聚合操作等效于以下SQL语句：
+
+```
+SELECT COUNT(*) AS count FROM sales
+```
+
+#### 检索重复值
+
+以下聚合操作使用该[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)阶段从`sales`集合中检索不同的项目值：
+
+此处的id不为null，则开始统计
+
+```
+db.sales.aggregate( [ { $group : { _id : "$item" } } ] )
+```
+
+该操作返回以下结果：
+
+```
+{ "_id" : "abc" }
+{ "_id" : "jkl" }
+{ "_id" : "def" }
+{ "_id" : "xyz" }
+```
+
 ## 投影
 
 Spring Data查询方法通常返回由根存储库管理聚合的一个或者多个实例。然而，它可能、
@@ -708,6 +769,8 @@ Spring Data查询方法通常返回由根存储库管理聚合的一个或者多
 ### 聚合
 
 将多个文档的值组会在一起，并且可以对分组的数据执行各种操作以返回单个结果。MongoDB提供了三种执行聚合的方式：[聚合管道](https://mongodb.net.cn/manual/aggregation/#aggregation-framework)，[map-reduce函数](https://mongodb.net.cn/manual/aggregation/#aggregation-map-reduce)和[单一目的聚合方法](https://mongodb.net.cn/manual/aggregation/#single-purpose-agg-operations)。
+
+聚合的每一个单独阶段都可以作为下一个阶段的输入。
 
 在这个例子中
 
@@ -718,7 +781,7 @@ db.orders.aggregate([
 ])
 ```
 
-**第一阶段**：[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段按`status`字段过滤文档，并将`status`等于的文档传递到下一阶段`"A"`。
+**第一阶段**：[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段按`status`字段过滤文档，并将`status`等于的文档传递到下一阶段`"A"`。参考平等匹配
 
 **第二阶段**：该[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)阶段按`cust_id`字段将文档分组，以计算每个唯一值的总和`cust_id`。
 
@@ -726,3 +789,39 @@ db.orders.aggregate([
 
 其他管道操作提供了用于按特定字段对文档进行分组和排序的工具，以及用于聚合包括文档数组在内的数组内容的工具。另外，管道阶段可以将[运算符](https://mongodb.net.cn/manual/reference/operator/aggregation/#aggregation-expression-operators)用于诸如计算平均值或连接字符串之类的任务。
 
+## 返回人口超过1000万的州
+
+以下汇总操作将返回总人口超过1000万的所有州：
+
+```
+db.zipcodes.aggregate( [
+   { $group: { _id: "$state", totalPop: { $sum: "$pop" } } },
+   { $match: { totalPop: { $gte: 10*1000*1000 } } }
+] )
+```
+
+在此示例中，[聚合管道](https://mongodb.net.cn/manual/core/aggregation-pipeline/#id1) 包括[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)以下 [`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段：
+
+- 该[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)阶段`zipcode` 按`state`字段将集合的文档分组，`totalPop`为每个状态计算字段，并为每个唯一状态输出文档。
+
+  新的按状态的文档有两个字段：`_id`字段和`totalPop`字段。该`_id`字段包含`state`; 的值 ；即按字段分组。该`totalPop`字段是包含每个州的总人口的计算字段。要计算该值，请[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)使用[`$sum`](https://mongodb.net.cn/manual/reference/operator/aggregation/sum/#grp._S_sum) 运算符`pop`为每个州添加人口字段（）。
+
+  在该[`$group`](https://mongodb.net.cn/manual/reference/operator/aggregation/group/#pipe._S_group)阶段之后，管道中的文档类似于以下内容：
+
+  ```
+  {
+    "_id" : "AK",
+    "totalPop" : 550043
+  }
+  ```
+
+- 该[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段过滤这些分组的文档以仅输出`totalPop`值大于或等于1000万的那些文档。该[`$match`](https://mongodb.net.cn/manual/reference/operator/aggregation/match/#pipe._S_match)阶段不会更改匹配的文档，但会输出未修改的匹配文档。
+
+此聚合操作的等效[SQL](https://mongodb.net.cn/manual/reference/glossary/#term-sql)为：
+
+```
+SELECT state, SUM(pop) AS totalPop
+FROM zipcodes
+GROUP BY state
+HAVING totalPop >= (10*1000*1000)
+```

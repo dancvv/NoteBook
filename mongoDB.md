@@ -762,6 +762,26 @@ db.sales.aggregate( [ { $group : { _id : "$item" } } ] )
 { "_id" : "xyz" }
 ```
 
+### $ project（汇总）
+
+将带有请求字段的文档传递到管道的下一个阶段。指定的字段可以是输入文档中的现有字段，也可以是新计算的字段。
+
+```
+{ $project: { <specification(s)> } }
+```
+
+下[`$project`](https://mongodb.net.cn/manual/reference/operator/aggregation/project/#pipe._S_project)阶段只包括`_id`， `title`和`author`在其输出文档的字段，类似于投影或者说就是投影
+
+```
+db.books.aggregate( [ { $project : { title : 1 , author : 1 } } ] )
+```
+
+该操作产生以下文档：
+
+```
+{ "_id" : 1, "title" : "abc123", "author" : { "last" : "zzz", "first" : "aaa" } }
+```
+
 ## 投影
 
 Spring Data查询方法通常返回由根存储库管理聚合的一个或者多个实例。然而，它可能、
@@ -825,3 +845,4 @@ FROM zipcodes
 GROUP BY state
 HAVING totalPop >= (10*1000*1000)
 ```
+

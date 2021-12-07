@@ -846,3 +846,22 @@ GROUP BY state
 HAVING totalPop >= (10*1000*1000)
 ```
 
+```
+db.mobileCustomer.aggregate([{$unwind:"$customerLocation"},{$match:{mobileId:"520","customerLocation.logicStatus":0}},{$project:{mobileId:1,location:"$customerLocation.geoPoint"}}])
+```
+
+```
+ db.mobileCustomer.aggregate([{$geoNear:{near:{ type: "Point", coordinates: [ -73.98142 , 40.71782 ] }},key:"customerLocation.geoPoint",distanceField:"dist.calculate",minDistance:10}])
+ 
+  db.mobileCustomer.aggregate([
+  {$geoNear:{near:{type:"Point",coordinates:[-73.98142,40.71782]}},key:"customerLocation.geoPoint",minDistance:10}])
+  
+   db.mobileCustomer.aggregate([{$unwind:"$customerLocation"},{$match:{mobileId:"520","customerLocation.logicStatus":0}},{$project:{mobileId:1,location:"$customerLocation.geoPoint"}},{$geoNear:{near:{ type: "Point", coordinates: [ -73.98142 , 40.71782 ] }},key:"location",distanceField:"dist.calculate",minDistance:10}])
+   
+   db.mobileCustomer.aggregate([{$unwind:"$customerLocation"},{$geoNear:{near:{ type: "Point", coordinates: [ -73.98142 , 40.71782 ] }},key:"customerLocation.geoPoint",distanceField:"dist.calculate",minDistance:10,query:{"customerLocation.logicStatus":0}}])
+   
+   
+```
+
+
+

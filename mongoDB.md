@@ -116,6 +116,22 @@ sudo chown -R mongodb:mongodb /var/lib/mongodb
 sudo chown -R mongodb:mongodb /var/log/mongodb
 ```
 
+另一种解决方案
+
+Just do those two commands for temporary solution:只需执行这两个命令即可临时解决：
+
+$ sudo rm -rf /tmp/mongodb-27017.sock
+
+$ sudo service mongod start
+
+For details:详情：
+
+That shall be fault due to user permissions in .sock file , You may have to change the owner to monogdb user.由于 .sock 文件中的用户权限，这应该是错误的，您可能需要将所有者更改为 monogdb 用户。
+
+chown -R mongodb:mongodb /var/lib/mongodb
+chown mongodb:mongodb /tmp/mongodb-27017.sock
+For more details visit Documentation for installation有关更多详细信息，请访问安装文档
+
 ### 使用
 
 ```
